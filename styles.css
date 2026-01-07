@@ -1,0 +1,175 @@
+#untappd-toolbar-root {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 55px;
+    background-color: #1A1A1A;
+    color: #FFFFFF;
+    z-index: 2147483647; /* Max z-index */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14.5px;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.5);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    pointer-events: none; /* Let clicks pass through if not on items */
+}
+
+.untappd-ticker-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+.untappd-ticker-content {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    white-space: nowrap;
+    height: 100%;
+    will-change: transform;
+}
+
+.untappd-item {
+    display: inline-flex;
+    align-items: center;
+    padding-right: 20px;
+    margin-right: 20px;
+    border-right: 1px solid #444;
+    height: 100%;
+}
+
+.untappd-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.untappd-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2;
+}
+
+.u-line1 {
+    font-weight: 600;
+    color: #fff;
+}
+
+.u-line2 {
+    font-size: 13px;
+    color: #aaa;
+}
+
+.u-user {
+    color: #FFC000;
+}
+
+.u-action {
+    color: #AAAAAA;
+}
+
+.u-beer {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.u-brewery {
+    color: #FFFFFF;
+}
+
+.u-venue {
+    color: #FFFFFF;
+}
+
+.u-rating {
+    color: #FFC000;
+}
+
+.u-separator {
+    margin: 0 4px;
+    color: #555;
+}
+
+.update-item {
+    border-right: 1px solid #333;
+    padding-right: 20px;
+    margin-right: 20px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.update-item .u-line1 {
+    color: #FFC000;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.update-item .u-line2 {
+    color: #fff;
+    font-size: 13px;
+}
+    font-weight: bold;
+}
+
+.u-beer {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.u-rating {
+    color: #FFC000;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.u-time {
+    color: #FFFFFF;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+#untappd-toolbar-root.minimized {
+    width: 30px;
+    height: 30px;
+    border-radius: 0 5px 0 0;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+}
+
+#untappd-toolbar-root.minimized .untappd-ticker-container {
+    display: none;
+}
+
+#untappd-toggle-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 30px;
+    height: 30px;
+    background: #FFC000;
+    border: none;
+    cursor: pointer;
+    z-index: 2147483648;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    pointer-events: auto;
+    border-radius: 0 5px 0 0;
+    opacity: 0.8;
+}
+
+#untappd-toggle-btn:hover {
+    opacity: 1;
+}
