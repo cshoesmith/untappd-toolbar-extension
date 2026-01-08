@@ -67,42 +67,125 @@
 }
 
 .u-user {
-    color: #FFC000;
-}
-
-.u-action {
-    color: #AAAAAA;
-}
-
-.u-beer {
     color: #FFFFFF;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-.u-brewery {
+.u-text {
     color: #FFFFFF;
+    font-weight: 700;
+}
+
+.u-checkin {
+    color: #aaa;
+    font-weight: 400;
 }
 
 .u-venue {
     color: #FFFFFF;
+    font-weight: 700;
 }
 
-.u-rating {
+.u-style {
+    color: #aaa;
+}
+
+.u-sep {
+    color: #aaa;
+    margin: 0 4px;
+}
+
+.u-beer {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.u-abv {
+    color: #aaa;
+    margin-left: 5px;
+    font-size: 11px;
+}
+
+.u-star {
+    margin-left: 5px;
+    font-size: 11px;
     color: #FFC000;
 }
 
-.u-separator {
-    margin: 0 4px;
-    color: #555;
+.u-rating {
+    color: #FFFFFF;
+    font-weight: normal;
+}
+
+.u-time {
+    color: #aaa;
+    margin-left: 5px;
 }
 
 .update-item {
     border-right: 1px solid #333;
-    padding-right: 20px;
-    margin-right: 20px;
+    padding-left: 20px;
+    background-color: #222;
+    /* Ensure vertical stacking */
+    display: inline-flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+}
+
+/* Context Menu */
+#untappd-context-menu {
+    position: fixed;
+    background: #1A1A1A;
+    border: 1px solid #FFC000;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    z-index: 2147483647;
+    padding: 5px 0;
+    display: none;
+    min-width: 150px;
+}
+
+.untappd-menu-item {
+    padding: 8px 15px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.untappd-menu-item:hover {
+    background-color: #333;
+    color: #FFC000;
+}
+
+.untappd-menu-separator {
+    height: 1px;
+    background-color: #444;
+    margin: 4px 0;
+}
+
+.untappd-menu-header {
+    padding: 8px 15px 4px 15px;
+    font-size: 11px;
+    color: #aaa;
+    text-transform: uppercase;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.untappd-menu-select-container {
+    padding: 4px 15px 8px 15px;
+}
+
+.untappd-menu-select {
+    width: 100%;
+    background: #333;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 4px;
+    border-radius: 3px;
+    font-size: 12px;
+    outline: none;
 }
 
 .update-item .u-line1 {
@@ -110,30 +193,12 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    margin-bottom: 2px;
 }
 
 .update-item .u-line2 {
     color: #fff;
     font-size: 13px;
-}
-    font-weight: bold;
-}
-
-.u-beer {
-    color: #FFFFFF;
-    font-weight: bold;
-}
-
-.u-rating {
-    color: #FFC000;
-    margin-left: 5px;
-    font-weight: bold;
-}
-
-.u-time {
-    color: #FFFFFF;
-    font-size: 0.8em;
-    margin-left: 5px;
 }
 
 #untappd-toolbar-root.minimized {

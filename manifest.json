@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Untappd Toolbar",
-  "version": "1.0.0.11",
+  "version": "1.0.0.15",
   "author": "Chris Shoesmith",
   "description": "A scrolling ticker of Untappd check-ins.",
   "permissions": [

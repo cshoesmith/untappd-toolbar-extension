@@ -45,6 +45,128 @@
     tickerContainer.className = 'untappd-ticker-container';
     root.appendChild(tickerContainer);
 
+    // --- Interaction Logic ---
+    let shutdownTimer = null;
+
+    // Click to Restart Ticker
+    tickerContainer.addEventListener('click', (e) => {
+        if (e.button === 0) { // Left Click only
+            offset = window.innerWidth;
+        }
+    });
+
+    // Context Menu
+    const menu = document.createElement('div');
+    menu.id = 'untappd-context-menu';
+    document.body.appendChild(menu);
+
+    function createMenuItem(text, onClick) {
+        const item = document.createElement('div');
+        item.className = 'untappd-menu-item';
+        item.textContent = text;
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onClick();
+            menu.style.display = 'none';
+        });
+        return item;
+    }
+
+    function createSeparator() {
+        const sep = document.createElement('div');
+        sep.className = 'untappd-menu-separator';
+        return sep;
+    }
+
+    tickerContainer.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        
+        // Rebuild menu content dynamically
+        menu.innerHTML = ''; 
+
+        // 1. Refresh Data
+        menu.appendChild(createMenuItem('Refresh Data', () => {
+             chrome.runtime.sendMessage({type: 'REFRESH_DATA'});
+             // Visual feedback?
+        }));
+
+        // 2. Open Untappd
+        menu.appendChild(createMenuItem('Open Untappd', () => {
+             window.open('https://untappd.com/home', '_blank');
+        }));
+
+        menu.appendChild(createSeparator());
+
+        // 3. Feed Limit Header
+        const header = document.createElement('div');
+        header.className = 'untappd-menu-header';
+        header.textContent = 'Feed Filter Limit';
+        menu.appendChild(header);
+
+        // 4. Feed Limit Dropdown
+        const selectContainer = document.createElement('div');
+        selectContainer.className = 'untappd-menu-select-container';
+        
+        const select = document.createElement('select');
+        select.className = 'untappd-menu-select';
+        
+        [8, 16, 24, 48].forEach(val => {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = `Last ${val} Hours`;
+            select.appendChild(opt);
+        });
+        
+        // Load current value
+        chrome.storage.local.get(['timeLimit'], (res) => {
+             select.value = res.timeLimit || "24";
+        });
+        
+        select.addEventListener('change', (ev) => {
+             const newVal = ev.target.value;
+             chrome.storage.local.set({ timeLimit: newVal });
+             chrome.runtime.sendMessage({type: 'REFRESH_DATA'});
+             menu.style.display = 'none';
+        });
+        
+        // Prevent menu closing when clicking inside select
+        select.addEventListener('click', (ev) => ev.stopPropagation());
+        
+        selectContainer.appendChild(select);
+        menu.appendChild(selectContainer);
+
+        menu.appendChild(createSeparator());
+
+        // 5. Close Toolbar
+        menu.appendChild(createMenuItem('Close Toolbar', () => { root.style.display = 'none'; }));
+
+
+        // Show Menu
+        menu.style.display = 'block';
+        menu.style.left = `${e.clientX}px`;
+        
+        // Position at bottom of screen
+        menu.style.top = 'auto'; // Clear top
+        menu.style.bottom = '0px'; 
+        
+        // Adjust if off screen horizontally
+        requestAnimationFrame(() => {
+            const rect = menu.getBoundingClientRect();
+            if (rect.right > window.innerWidth) {
+                // Shift left to fit
+                menu.style.left = `${window.innerWidth - rect.width}px`;
+            }
+        });
+    });
+
+    // Close menu when clicking elsewhere
+    document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+    // ------------------------
+
     const tickerContent = document.createElement('div');
     tickerContent.className = 'untappd-ticker-content';
     tickerContainer.appendChild(tickerContent);
@@ -105,7 +227,7 @@
             updateItem.className = 'untappd-item update-item';
             
             const absTime = formatAbsoluteTime(lastUpdated);
-            updateItem.innerHTML = `<div class="u-line1">Last Refresh at</div><div class="u-line2">${absTime}</div>`;
+            updateItem.innerHTML = `<div class="u-line1">LAST REFRESH AT</div><div class="u-line2">${absTime}</div>`;
             tickerContent.appendChild(updateItem);
         }
 
@@ -133,20 +255,37 @@
             const info = document.createElement('div');
             info.className = 'untappd-info';
 
-            // Line 1: User checked-in Beer by Brewery
+            // Line 1: User checked-in @ Venue
             const line1 = document.createElement('div');
             line1.className = 'u-line1';
-            line1.innerHTML = `<span class="u-user">${c.user}</span> <span class="u-action">checked-in</span> <span class="u-beer">${c.beer}</span> <span class="u-action">by</span> <span class="u-brewery">${c.brewery}</span>`;
+            
+            let line1HTML = `<span class="u-user">${c.user}</span> <span class="u-checkin">checked-in</span>`;
+            if (c.venue) {
+                line1HTML += ` <span class="u-text">@</span> <span class="u-venue">${c.venue}</span>`;
+            }
+            line1.innerHTML = line1HTML;
             info.appendChild(line1);
 
-            // Line 2: @ Venue, Rating, Time
+            // Line 2: Brewery : Beer ⭐ Rating (Time)
             const line2 = document.createElement('div');
             line2.className = 'u-line2';
             
-            // Calculate relative time for checkin
             const timeDisplay = getRelativeTime(c.time);
             
-            line2.innerHTML = `<span class="u-action">@</span> <span class="u-venue">${c.venue}</span> <span class="u-separator">,</span> <span class="u-rating">⭐ ${c.rating}</span> <span class="u-separator">,</span> <span class="u-time">${timeDisplay}</span>`;
+            // Using Brewery as proxy for Style since we don't scrape style
+            let line2HTML = `<span class="u-style">${c.brewery}</span> <span class="u-sep">:</span> <span class="u-beer">${c.beer}</span>`;
+            
+            if (c.abv) {
+                line2HTML += ` <span class="u-abv">(${c.abv})</span>`;
+            }
+
+            if (c.rating && c.rating !== "-") {
+                line2HTML += ` <span class="u-star">⭐</span> <span class="u-rating">${c.rating}</span>`;
+            }
+            
+            line2HTML += ` <span class="u-time">(${timeDisplay})</span>`;
+            
+            line2.innerHTML = line2HTML;
             info.appendChild(line2);
 
             item.appendChild(info);

@@ -11,6 +11,22 @@ document.getElementById('open-untappd').addEventListener('click', () => {
     chrome.tabs.create({ url: 'https://untappd.com/home' });
 });
 
+// Settings Logic
+const limitSelect = document.getElementById('time-limit');
+chrome.storage.local.get(['timeLimit'], (result) => {
+    if (result.timeLimit) {
+        limitSelect.value = result.timeLimit;
+    }
+});
+
+limitSelect.addEventListener('change', () => {
+    chrome.storage.local.set({ timeLimit: limitSelect.value });
+    // Trigger a refresh so the new limit applies immediately
+    chrome.runtime.sendMessage({type: 'REFRESH_DATA'});
+    const status = document.getElementById('status');
+    status.textContent = "Updating feed...";
+});
+
 chrome.storage.local.get(['lastUpdated', 'checkins'], (result) => {
     const status = document.getElementById('status');
     if (result.lastUpdated) {

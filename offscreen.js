@@ -21,6 +21,7 @@ function parseUntappdHtml(html) {
 
         const user = links[0].textContent.trim();
         const beer = links[1].textContent.trim();
+        const beerUrl = links[1].getAttribute('href'); // Extract Beer URL for ABV fetching
         const brewery = links[2].textContent.trim();
         let venue = "Unknown Location";
         if (links.length > 3) {
@@ -46,7 +47,7 @@ function parseUntappdHtml(html) {
         const time = timeEl ? timeEl.textContent.trim() : "";
 
         checkins.push({
-            user, beer, brewery, venue, rating, avatar, label, time
+            user, beer, beerUrl, brewery, venue, rating, avatar, label, time
         });
     } catch (e) {
         console.error("Error parsing item", e);
