@@ -84,6 +84,17 @@
         // Rebuild menu content dynamically
         menu.innerHTML = ''; 
 
+        // Version Header
+        const version = chrome.runtime.getManifest().version;
+        const versionDiv = document.createElement('div');
+        versionDiv.className = 'untappd-menu-header';
+        versionDiv.style.textAlign = 'center';
+        versionDiv.style.opacity = '0.7';
+        versionDiv.textContent = `Untappd Toolbar v ${version}`;
+        menu.appendChild(versionDiv);
+
+        menu.appendChild(createSeparator());
+
         // 1. Refresh Data
         menu.appendChild(createMenuItem('Refresh Data', () => {
              chrome.runtime.sendMessage({type: 'REFRESH_DATA'});
