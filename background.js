@@ -40,10 +40,21 @@ async function fetchAndParse() {
         await setupOffscreenDocument(OFFSCREEN_DOCUMENT_PATH);
 
         // Send message to offscreen document
-        let checkins = await chrome.runtime.sendMessage({
+        const parseResult = await chrome.runtime.sendMessage({
             type: 'PARSE_UNTAPPD',
             html: html
         });
+
+        // Check authentication status
+        if (!parseResult.authenticated) {
+            console.log('User session expired or not logged in');
+            chrome.storage.local.set({ isAuthenticated: false, lastUpdated: Date.now() });
+            return;
+        } else {
+            chrome.storage.local.set({ isAuthenticated: true });
+        }
+
+        let checkins = parseResult.checkins;
 
         if (checkins && checkins.length > 0) {
             

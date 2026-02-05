@@ -27,8 +27,15 @@ limitSelect.addEventListener('change', () => {
     status.textContent = "Updating feed...";
 });
 
-chrome.storage.local.get(['lastUpdated', 'checkins'], (result) => {
+chrome.storage.local.get(['lastUpdated', 'checkins', 'isAuthenticated'], (result) => {
     const status = document.getElementById('status');
+
+    if (result.isAuthenticated === false) {
+        status.textContent = "Session Expired. Please login.";
+        status.style.color = "red";
+        return;
+    }
+
     if (result.lastUpdated) {
         const date = new Date(result.lastUpdated);
         const count = result.checkins ? result.checkins.length : 0;

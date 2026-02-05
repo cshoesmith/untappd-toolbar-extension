@@ -184,6 +184,7 @@
 
     let checkins = [];
     let lastUpdated = null;
+    let isAuthenticated = true;
     let animationId;
     let offset = window.innerWidth;
     const speed = 1.5; // pixels per frame
@@ -240,6 +241,15 @@
             const absTime = formatAbsoluteTime(lastUpdated);
             updateItem.innerHTML = `<div class="u-line1">LAST REFRESH AT</div><div class="u-line2">${absTime}</div>`;
             tickerContent.appendChild(updateItem);
+        }
+
+        if (isAuthenticated === false) {
+            const msg = document.createElement('div');
+            msg.className = 'untappd-item';
+            msg.style.color = '#ff6b6b';
+            msg.innerHTML = '⚠️ <strong>Session Expired</strong>: Please log in to Untappd.com to continue.';
+            tickerContent.appendChild(msg);
+            return;
         }
 
         if (checkins.length === 0) {
@@ -318,12 +328,15 @@
     }
 
     function updateData() {
-        chrome.storage.local.get(['checkins', 'lastUpdated'], (result) => {
+        chrome.storage.local.get(['checkins', 'lastUpdated', 'isAuthenticated'], (result) => {
             if (result.checkins) {
                 checkins = result.checkins;
             }
             if (result.lastUpdated) {
                 lastUpdated = result.lastUpdated;
+            }
+            if (result.isAuthenticated !== undefined) {
+                isAuthenticated = result.isAuthenticated;
             }
             renderCheckins();
         });
@@ -336,13 +349,23 @@
     // Listen for updates
     chrome.storage.onChanged.addListener((changes, namespace) => {
         if (namespace === 'local') {
+            let needsRender = false;
             if (changes.checkins) {
                 checkins = changes.checkins.newValue;
+                needsRender = true;
             }
             if (changes.lastUpdated) {
                 lastUpdated = changes.lastUpdated.newValue;
+                needsRender = true;
             }
-            renderCheckins();
+            if (changes.isAuthenticated) {
+                isAuthenticated = changes.isAuthenticated.newValue;
+                needsRender = true;
+            }
+            
+            if (needsRender) {
+                renderCheckins();
+            }
         }
     });
 

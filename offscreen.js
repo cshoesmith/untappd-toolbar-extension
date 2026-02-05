@@ -8,6 +8,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 function parseUntappdHtml(html) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
+  
+  // Check if we assume we are authenticated by looking for the main stream container
+  const mainStream = doc.querySelector('#main-stream');
+  // If no main-stream, we assume not logged in (or critical layout change)
+  if (!mainStream) {
+      return { checkins: [], authenticated: false };
+  }
+
   const items = doc.querySelectorAll('#main-stream .item');
   const checkins = [];
 
@@ -54,5 +62,5 @@ function parseUntappdHtml(html) {
     }
   });
 
-  return checkins;
+  return { checkins, authenticated: true };
 }
